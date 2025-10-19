@@ -30,6 +30,7 @@ export default function ChatPage() {
   const [transferAmount, setTransferAmount] = useState<string>('0.1');
   const [transferPercentage, setTransferPercentage] = useState<number>(25);
   const [isTransferring, setIsTransferring] = useState(false);
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   
   // Get user account information
   const { 
@@ -393,174 +394,201 @@ export default function ChatPage() {
         {/* Compact Header */}
         <div className="mb-6">
           <div 
-            className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-xl"
+            className="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden transition-all duration-300"
           >
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
-                  <span className="text-xl">💬</span>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    AI Chat Assistant
-                  </h1>
-                  <p className="text-sm text-gray-600">Secure CELO-powered conversations</p>
-                </div>
-              </div>
-              
-              {/* Role Selection */}
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => {
-                    console.log('User mode clicked, current role:', role);
-                    setRole('user');
-                  }} 
-                  className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 font-medium text-sm ${
-                    role === 'user'
-                      ? 'shadow-lg font-semibold'
-                      : 'bg-white/50 text-gray-700 border-gray-200 hover:border-purple-300 hover:bg-white/80'
-                  }`}
-                  style={role === 'user' ? {
-                    background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
-                    color: 'white',
-                    borderColor: 'transparent',
-                    textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-                  } : {}}
-                  disabled={false}
-                >
-                  👤 User
-                </button>
-                <button 
-                  onClick={() => {
-                    console.log('Professional mode clicked, current role:', role);
-                    setRole('pro');
-                  }} 
-                  className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 font-medium text-sm ${
-                    role === 'pro'
-                      ? 'shadow-lg font-semibold'
-                      : 'bg-white/50 text-gray-700 border-gray-200 hover:border-purple-300 hover:bg-white/80'
-                  }`}
-                  style={role === 'pro' ? {
-                    background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
-                    color: 'white',
-                    borderColor: 'transparent',
-                    textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-                  } : {}}
-                  disabled={false}
-                >
-                  🎯 Professional
-                </button>
-              </div>
-              
-              {/* Payment Mode Selection */}
-              <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200/50">
-                <div className="text-sm font-medium text-gray-700 mb-2">Payment Mode:</div>
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => setPaymentMode('smart-account')}
-                    className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 font-medium text-sm ${
-                      paymentMode === 'smart-account'
-                        ? 'shadow-lg font-semibold'
-                        : 'bg-white/50 text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-white/80'
-                    }`}
-                    style={paymentMode === 'smart-account' ? {
-                      background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
-                      color: 'white',
-                      borderColor: 'transparent',
-                      textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-                    } : {}}
-                    disabled={false}
-                  >
-                    🏦 Smart Account (Gas + CELO)
-                  </button>
-                  <button
-                    onClick={() => setPaymentMode('user-wallet')}
-                    className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 font-medium text-sm ${
-                      paymentMode === 'user-wallet'
-                        ? 'shadow-lg font-semibold'
-                        : 'bg-white/50 text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-white/80'
-                    }`}
-                    style={paymentMode === 'user-wallet' ? {
-                      background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
-                      color: 'white',
-                      borderColor: 'transparent',
-                      textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-                    } : {}}
-                    disabled={false}
-                  >
-                    👤 User Wallet (Gas Only)
-                  </button>
-                </div>
-                <div className="mt-2 text-xs text-gray-600">
-                  {paymentMode === 'smart-account' 
-                    ? 'Smart account pays for both gas and message cost'
-                    : 'User pays CELO separately, gas sponsored by Arka'
-                  }
-                </div>
-              </div>
-              
-              {/* Balance Display */}
-              <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/50">
-                <div className="text-sm font-medium text-gray-700 mb-2">Account Balances:</div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-white/50 rounded-xl border border-gray-200">
-                    <div className="text-xs text-gray-600 mb-1">EOA Wallet</div>
-                    <div className="text-lg font-bold text-gray-900">{eoaBalance}</div>
-                    <div className="text-xs text-gray-500">CELO</div>
-                    {eoaAddress && (
-                      <div className="text-xs text-gray-400 mt-1 font-mono">
-                        {eoaAddress.slice(0, 6)}...{eoaAddress.slice(-4)}
-                      </div>
-                    )}
+            {/* Header Bar - Always Visible */}
+            <div className="p-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                    <span className="text-xl">💬</span>
                   </div>
-                  <div className="text-center p-3 bg-white/50 rounded-xl border border-gray-200">
-                    <div className="text-xs text-gray-600 mb-1">Smart Account</div>
-                    <div className="text-lg font-bold text-gray-900">{smartAccountBalance}</div>
-                    <div className="text-xs text-gray-500">CELO</div>
-                    {smartAccountAddress && (
-                      <div className="text-xs text-gray-400 mt-1 font-mono">
-                        {smartAccountAddress.slice(0, 6)}...{smartAccountAddress.slice(-4)}
-                      </div>
-                    )}
+                  <div>
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                      AI Chat Assistant
+                    </h1>
+                    <p className="text-sm text-gray-600">Secure CELO-powered conversations</p>
                   </div>
                 </div>
-                <div className="mt-2 text-xs text-gray-600">
-                  💡 Smart Account Mode uses Smart Account balance. User Wallet Mode uses EOA balance.
-                </div>
-                <div className="mt-3 flex justify-center">
-                  <button
-                    onClick={() => setShowTransferModal(true)}
-                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg"
-                  >
-                    💰 Transfer Funds
-                  </button>
-                </div>
-              </div>
-              
-              {/* Status and Price */}
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-gray-600">Connected</span>
-                </div>
-                <div className="text-center p-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-200/50">
-                  <div className="text-lg font-bold text-gray-900">{getPaymentAmount()}</div>
-                  <div className="text-xs text-gray-600">CELO</div>
-                </div>
+                
+                {/* Collapse Toggle Button */}
                 <button
-                  onClick={() => setShowTxHistory(!showTxHistory)}
-                  className="px-3 py-2 bg-white/50 border border-gray-200 rounded-xl text-xs font-medium text-gray-700 hover:bg-white/80 transition-all duration-300"
+                  onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-white/50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-white/80 transition-all duration-300"
                 >
-                  {showTxHistory ? '📋 Hide' : '📋 History'}
+                  <span>{isHeaderCollapsed ? '⚙️ Show Settings' : '⚙️ Hide Settings'}</span>
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-300 ${isHeaderCollapsed ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
               </div>
             </div>
-            
-            {/* Warning */}
-            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-              <div className="flex items-center space-x-2">
-                <span className="text-amber-600">⚠️</span>
-                <span className="text-amber-800 text-xs">This is not clinical advice. For medical concerns, please consult a healthcare professional.</span>
+
+            {/* Collapsible Configuration Section */}
+            <div className={`transition-all duration-300 ease-in-out ${
+              isHeaderCollapsed ? 'max-h-0 opacity-0 overflow-hidden' : 'max-h-[1000px] opacity-100'
+            }`}>
+              <div className="p-6 space-y-4">
+              
+                {/* Role Selection */}
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => {
+                      console.log('User mode clicked, current role:', role);
+                      setRole('user');
+                    }} 
+                    className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 font-medium text-sm ${
+                      role === 'user'
+                        ? 'shadow-lg font-semibold'
+                        : 'bg-white/50 text-gray-700 border-gray-200 hover:border-purple-300 hover:bg-white/80'
+                    }`}
+                    style={role === 'user' ? {
+                      background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
+                      color: 'white',
+                      borderColor: 'transparent',
+                      textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                    } : {}}
+                    disabled={false}
+                  >
+                    👤 User
+                  </button>
+                  <button 
+                    onClick={() => {
+                      console.log('Professional mode clicked, current role:', role);
+                      setRole('pro');
+                    }} 
+                    className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 font-medium text-sm ${
+                      role === 'pro'
+                        ? 'shadow-lg font-semibold'
+                        : 'bg-white/50 text-gray-700 border-gray-200 hover:border-purple-300 hover:bg-white/80'
+                    }`}
+                    style={role === 'pro' ? {
+                      background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
+                      color: 'white',
+                      borderColor: 'transparent',
+                      textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                    } : {}}
+                    disabled={false}
+                  >
+                    🎯 Professional
+                  </button>
+                </div>
+              
+                {/* Payment Mode Selection */}
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200/50">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Payment Mode:</div>
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => setPaymentMode('smart-account')}
+                      className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 font-medium text-sm ${
+                        paymentMode === 'smart-account'
+                          ? 'shadow-lg font-semibold'
+                          : 'bg-white/50 text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-white/80'
+                      }`}
+                      style={paymentMode === 'smart-account' ? {
+                        background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
+                        color: 'white',
+                        borderColor: 'transparent',
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                      } : {}}
+                      disabled={false}
+                    >
+                      🏦 Smart Account (Gas + CELO)
+                    </button>
+                    <button
+                      onClick={() => setPaymentMode('user-wallet')}
+                      className={`px-4 py-2 rounded-xl border-2 transition-all duration-300 font-medium text-sm ${
+                        paymentMode === 'user-wallet'
+                          ? 'shadow-lg font-semibold'
+                          : 'bg-white/50 text-gray-700 border-gray-200 hover:border-blue-300 hover:bg-white/80'
+                      }`}
+                      style={paymentMode === 'user-wallet' ? {
+                        background: 'linear-gradient(to right, #3b82f6, #06b6d4)',
+                        color: 'white',
+                        borderColor: 'transparent',
+                        textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                      } : {}}
+                      disabled={false}
+                    >
+                      👤 User Wallet (Gas Only)
+                    </button>
+                  </div>
+                  <div className="mt-2 text-xs text-gray-600">
+                    {paymentMode === 'smart-account' 
+                      ? 'Smart account pays for both gas and message cost'
+                      : 'User pays CELO separately, gas sponsored by Arka'
+                    }
+                  </div>
+                </div>
+              
+                {/* Balance Display */}
+                <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/50">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Account Balances:</div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-white/50 rounded-xl border border-gray-200">
+                      <div className="text-xs text-gray-600 mb-1">EOA Wallet</div>
+                      <div className="text-lg font-bold text-gray-900">{eoaBalance}</div>
+                      <div className="text-xs text-gray-500">CELO</div>
+                      {eoaAddress && (
+                        <div className="text-xs text-gray-400 mt-1 font-mono">
+                          {eoaAddress.slice(0, 6)}...{eoaAddress.slice(-4)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-center p-3 bg-white/50 rounded-xl border border-gray-200">
+                      <div className="text-xs text-gray-600 mb-1">Smart Account</div>
+                      <div className="text-lg font-bold text-gray-900">{smartAccountBalance}</div>
+                      <div className="text-xs text-gray-500">CELO</div>
+                      {smartAccountAddress && (
+                        <div className="text-xs text-gray-400 mt-1 font-mono">
+                          {smartAccountAddress.slice(0, 6)}...{smartAccountAddress.slice(-4)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-2 text-xs text-gray-600">
+                    💡 Smart Account Mode uses Smart Account balance. User Wallet Mode uses EOA balance.
+                  </div>
+                  <div className="mt-3 flex justify-center">
+                    <button
+                      onClick={() => setShowTransferModal(true)}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 shadow-lg"
+                    >
+                      💰 Transfer Funds
+                    </button>
+                  </div>
+                </div>
+              
+                {/* Status and Price */}
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-gray-600">Connected</span>
+                  </div>
+                  <div className="text-center p-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-200/50">
+                    <div className="text-lg font-bold text-gray-900">{getPaymentAmount()}</div>
+                    <div className="text-xs text-gray-600">CELO</div>
+                  </div>
+                  <button
+                    onClick={() => setShowTxHistory(!showTxHistory)}
+                    className="px-3 py-2 bg-white/50 border border-gray-200 rounded-xl text-xs font-medium text-gray-700 hover:bg-white/80 transition-all duration-300"
+                  >
+                    {showTxHistory ? '📋 Hide' : '📋 History'}
+                  </button>
+                </div>
+                
+                {/* Warning */}
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-amber-600">⚠️</span>
+                    <span className="text-amber-800 text-xs">This is not clinical advice. For medical concerns, please consult a healthcare professional.</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
