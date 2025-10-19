@@ -16,8 +16,9 @@ export async function POST(req: NextRequest) {
     const chat = await client.chat.completions.create({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: system }, { role: 'user', content: messageText }] });
     const answer = chat.choices[0]?.message?.content || '';
     return new Response(JSON.stringify({ answer }), { headers: { 'content-type': 'application/json' } });
-  } catch (err: any) {
-    const code = err?.code || err?.status || 'unknown_error';
+  } catch (err: unknown) {
+    const error = err as { code?: string | number; status?: string | number };
+    const code = error?.code || error?.status || 'unknown_error';
     const isQuota = code === 'insufficient_quota' || code === 429;
     const fallback = isQuota
       ? 'The AI model is temporarily unavailable due to quota limits. Please try again later.'
