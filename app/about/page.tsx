@@ -27,7 +27,7 @@ export default function AboutPage() {
                 <p className="text-gray-600 leading-relaxed">
                   MotusDAO is pioneering the future of AI-powered psychological support by combining 
                   cutting-edge artificial intelligence with blockchain technology. We believe everyone 
-                  deserves access to high-quality mental health support, and we're making that vision 
+                  deserves access to high-quality mental health support, and we&apos;re making that vision 
                   a reality through decentralized, secure, and intelligent conversation systems.
                 </p>
               </div>
@@ -110,7 +110,7 @@ export default function AboutPage() {
                 <h2 className="text-xl font-semibold text-gray-900 mb-3">Join the Revolution</h2>
                 <p className="text-gray-600 mb-4">
                   Be part of the future of mental health support. Experience AI-powered conversations 
-                  that understand, support, and guide you through life's challenges.
+                  that understand, support, and guide you through life&apos;s challenges.
                 </p>
                 <Link 
                   href="/chat" 
